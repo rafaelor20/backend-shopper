@@ -19,6 +19,14 @@ export const billRepository = {
     });
   },
 
+  async getBillsByCustomerCode(customer_code: string) {
+    return prisma.reading.findMany({
+      where: {
+        customer_code,
+      },
+    });
+  },
+
   async saveBill(data: { customer_code: string, measure_datetime: Date, measure_type: string, measure_value: number, image_url: string, measure_uuid: string }) {
     return prisma.reading.create({
       data,
