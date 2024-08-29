@@ -5,7 +5,7 @@ import cors from 'cors';
 
 import { loadEnv, connectDb, disconnectDB } from '@/config';
 
-import { uploadBillRouter } from './routers';
+import { uploadBillRouter, confirmBillRouter } from './routers';
 
 loadEnv();
 
@@ -18,6 +18,7 @@ app
   .use(express.json())
   .get('/health', (_req, res) => res.send('OK!'))
   .post('/upload', uploadBillRouter)
+  .patch('/confirm', confirmBillRouter);
 //  .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {

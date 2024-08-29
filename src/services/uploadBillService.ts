@@ -1,4 +1,4 @@
-import { uploadRepository } from '../repositories/uploadRepository';
+import { billRepository } from '../repositories/billRepository';
 import { queryGeminiAPI } from '../integrations/geminiAPI';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +11,7 @@ export const uploadService = {
     const { image, customer_code, measure_datetime, measure_type } = data;
 
     // Check for existing readings in the current month
-    const existingReading = await uploadRepository.findExistingReading(customer_code, measure_datetime, measure_type);
+    const existingReading = await billRepository.findExistingReading(customer_code, measure_datetime, measure_type);
     if (existingReading) {
       const error = new CustomError('Leitura do mês já realizada');
       error.code = 'DOUBLE_REPORT';
@@ -22,7 +22,7 @@ export const uploadService = {
     const { imageUrl, measureValue } = await queryGeminiAPI(image);
 
     // Save reading to database
-    const newReading = await uploadRepository.saveReading({
+    const newReading = await billRepository.saveBill({
       customer_code,
       measure_datetime,
       measure_type,

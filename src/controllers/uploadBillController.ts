@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { uploadService } from '../services/uploadService';
+import { uploadService } from '../services/uploadBillService';
 
 export const uploadBill = {
   async uploadReading(req: Request, res: Response) {

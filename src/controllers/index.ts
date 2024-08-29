@@ -1,1 +1,1 @@
-export * from './uploadBill';
+export * from './uploadBillController';
