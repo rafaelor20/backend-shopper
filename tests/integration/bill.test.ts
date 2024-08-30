@@ -1,23 +1,29 @@
 import request from 'supertest';
-import app from '../../src/app';
 import { prisma } from '@/config'; 
+import app, { init, close } from '@/app';
+import { water, energy } from '../factories/images';
+
+
+beforeAll(async () => {
+    await init();
+    await prisma.bill.deleteMany({}); // Limpa os registros de medições
+  });
+  
+  beforeEach(async () => {
+    await prisma.bill.deleteMany({}); // Limpa os registros de medições
+  });
+  
+  afterAll(async () => {
+    await close();
+  });
+  
 
 describe('POST /upload', () => {
-    beforeAll(async () => {
-        // Configurações necessárias antes de rodar os testes, como seed do banco de dados de teste
-        await prisma.measurement.deleteMany(); // Limpa os registros de medições
-    });
-
-    afterAll(async () => {
-        // Fechar as conexões com o banco de dados após todos os testes
-        await prisma.$disconnect();
-    });
-
     test('Deve retornar 200 e a leitura extraída da imagem', async () => {
         const response = await request(app)
             .post('/upload')
             .send({
-                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...', // Base64 de exemplo
+                image: water, // Base64 de exemplo
                 customer_code: 'CUSTOMER123',
                 measure_datetime: '2024-08-29T12:00:00Z',
                 measure_type: 'WATER'
@@ -27,9 +33,9 @@ describe('POST /upload', () => {
         expect(response.body).toHaveProperty('image_url');
         expect(response.body).toHaveProperty('measure_value');
         expect(response.body).toHaveProperty('measure_uuid');
-    });
+    }, 60000);
 
-    test('Deve retornar 400 se os dados enviados forem inválidos', async () => {
+    it('Deve retornar 400 se os dados enviados forem inválidos', async () => {
         const response = await request(app)
             .post('/upload')
             .send({
@@ -45,19 +51,22 @@ describe('POST /upload', () => {
 
     test('Deve retornar 409 se já houver uma leitura no mês para esse tipo', async () => {
         // Primeiro, cria uma leitura no banco de dados de teste
-        await prisma.measurement.create({
+        await prisma.bill.create({
             data: {
                 customer_code: 'CUSTOMER123',
                 measure_datetime: new Date('2024-08-01T12:00:00Z'),
                 measure_type: 'GAS',
-                measure_value: 123
+                measure_value: 123,
+                measure_uuid: 'some-uuid',
+                has_confirmed: true,
+                image_url: 'https://example.com/image.png'
             }
         });
-
+    
         const response = await request(app)
             .post('/upload')
             .send({
-                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...',
+                image: energy,
                 customer_code: 'CUSTOMER123',
                 measure_datetime: '2024-08-15T12:00:00Z',
                 measure_type: 'GAS'
@@ -65,5 +74,5 @@ describe('POST /upload', () => {
         
         expect(response.status).toBe(409);
         expect(response.body.error_code).toBe('DOUBLE_REPORT');
-    });
+    }, 60000);
 });

@@ -20,4 +20,4 @@ RUN npm run build
 RUN npx prisma generate
 
 # só roda quando darmos docker run
-CMD ["npm", "start"]
+CMD ["npm", "run", "migrate-and-start"]

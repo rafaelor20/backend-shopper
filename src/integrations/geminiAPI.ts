@@ -15,11 +15,12 @@ export const queryGeminiAPI = async (image: string) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-    const prompt = `Read the water or energy consumed and return in the format measuredValue = 'integer': ${image}`;
+    const prompt = `Read the water or energy consumed and return in the format measuredValue = 'integer'`;
 
-    const generatedContent = await model.generateContent(prompt);
-    
+    const generatedContent = await model.generateContent([prompt, image]);
+    console.log(generatedContent.response.text());
     const measuredValue = extractValue(generatedContent.response.text());
+    
     // Assuming the Gemini API returns these fields
 
     return measuredValue;

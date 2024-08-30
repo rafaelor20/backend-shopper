@@ -15,9 +15,9 @@ app
   .use(cors())
   .use(express.json())
   .get('/health', (_req, res) => res.send('OK!'))
-  .post('/upload', uploadBillRouter)
-  .patch('/confirm', confirmBillRouter)
-  .get('/', getBillsRouter);
+  .use('/upload', uploadBillRouter)
+  .use('/confirm', confirmBillRouter)
+  .use('/', getBillsRouter);
 //  .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
