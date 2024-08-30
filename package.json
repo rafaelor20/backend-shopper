@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npx jest --runInBand --detectOpenHandles",
+    "test": "cross-env NODE_ENV=test jest --passWithNoTests --runInBand",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "test:load-envs": "dotenv -e .env.test",

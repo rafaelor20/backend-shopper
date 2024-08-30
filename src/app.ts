@@ -7,9 +7,6 @@ import { uploadBillRouter, confirmBillRouter, getBillsRouter } from './routers';
 
 loadEnv();
 
-//import { handleApplicationErrors } from '@/middlewares';
-//import {  } from '@/routers';
-
 const app = express();
 app
   .use(cors())
@@ -18,7 +15,6 @@ app
   .use('/upload', uploadBillRouter)
   .use('/confirm', confirmBillRouter)
   .use('/', getBillsRouter);
-//  .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
   connectDb();

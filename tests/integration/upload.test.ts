@@ -1,8 +1,9 @@
-import request from 'supertest';
+import supertest from 'supertest';
 import { prisma } from '@/config'; 
 import app, { init, close } from '@/app';
 import { water, energy } from '../factories/images';
 
+const server = supertest(app);
 
 beforeAll(async () => {
     await init();
@@ -19,24 +20,9 @@ beforeAll(async () => {
   
 
 describe('POST /upload', () => {
-    test('Deve retornar 200 e a leitura extraída da imagem', async () => {
-        const response = await request(app)
-            .post('/upload')
-            .send({
-                image: water, // Base64 de exemplo
-                customer_code: 'CUSTOMER123',
-                measure_datetime: '2024-08-29T12:00:00Z',
-                measure_type: 'WATER'
-            });
-        
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('image_url');
-        expect(response.body).toHaveProperty('measure_value');
-        expect(response.body).toHaveProperty('measure_uuid');
-    }, 60000);
 
-    it('Deve retornar 400 se os dados enviados forem inválidos', async () => {
-        const response = await request(app)
+    test('Deve retornar 400 se os dados enviados forem inválidos', async () => {
+        const response = await server
             .post('/upload')
             .send({
                 image: 'invalid_base64_string', // Base64 inválido
@@ -63,7 +49,7 @@ describe('POST /upload', () => {
             }
         });
     
-        const response = await request(app)
+        const response = await server
             .post('/upload')
             .send({
                 image: energy,
@@ -74,5 +60,20 @@ describe('POST /upload', () => {
         
         expect(response.status).toBe(409);
         expect(response.body.error_code).toBe('DOUBLE_REPORT');
+    }, 60000);
+
+    test('Deve retornar 200 e a leitura extraída da imagem', async () => {
+        const response = await server.post('/upload')
+            .send({
+                image: water, // Base64 de exemplo
+                customer_code: 'CUSTOMER123',
+                measure_datetime: '2024-08-29T12:00:00Z',
+                measure_type: 'WATER'
+            });
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('image_url');
+        expect(response.body).toHaveProperty('measure_value');
+        expect(response.body).toHaveProperty('measure_uuid');
     }, 60000);
 });

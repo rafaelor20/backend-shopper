@@ -12,7 +12,7 @@ function extractValue(text: string) {
 
 export const queryGeminiAPI = async (image: string) => {
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `Read the water or energy consumed and return in the format measuredValue = 'integer'`;

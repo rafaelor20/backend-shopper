@@ -29,6 +29,7 @@ export const confirmBill = {
           });
         }
       }
+      return error;
     }
   },
 };  
