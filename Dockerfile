@@ -16,5 +16,8 @@ RUN npm i
 # faz a compilação do TS para JS
 RUN npm run build
 
+# Gera os artefatos do Prisma (se necessário)
+RUN npx prisma generate
+
 # só roda quando darmos docker run
 CMD ["npm", "start"]

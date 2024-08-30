@@ -19,16 +19,17 @@ export const uploadService = {
     }
 
     // Query Gemini API for the reading value
-    const { imageUrl, measureValue } = await queryGeminiAPI(image);
-
+    const measuredValue = await queryGeminiAPI(image) ?? 0;
+    
     // Save reading to database
     const newReading = await billRepository.saveBill({
       customer_code,
       measure_datetime,
       measure_type,
-      measure_value: measureValue,
-      image_url: imageUrl,
+      measure_value: measuredValue,
+      image_url: "imageUrl",
       measure_uuid: uuidv4(),
+      has_confirmed: false, // or true, depending on your logic
     });
 
     return {
